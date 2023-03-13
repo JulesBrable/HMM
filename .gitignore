@@ -2,6 +2,7 @@
 .Rhistory
 .Rapp.history
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # Session Data files
 .RData
@@ -39,6 +40,8 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 =======
+=======
+>>>>>>> d0daba7 (initial commit)
 # Session Data files
 .RData
 # User-specific files
@@ -66,5 +69,9 @@ vignettes/*.pdf
 .Renviron
 # others
 *.DS_Store
+<<<<<<< HEAD
+.DS_Store
+>>>>>>> d0daba7 (initial commit)
+=======
 .DS_Store
 >>>>>>> d0daba7 (initial commit)
