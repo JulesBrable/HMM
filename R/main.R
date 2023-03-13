@@ -1,6 +1,9 @@
 # datas come from https://data.oecd.org/interest/long-term-interest-rates.htm
 
 library(tidyverse)
+library(depmixS4)
+library(gridExtra)
+library(reshape2)
 
 source("R/load_data.R")
 
@@ -81,10 +84,7 @@ source("R/load_data.R")
 		# Commençons par ajuster un HMM à deux états cachés 
 		{
 			#On s'inspire du code de https://www.r-bloggers.com/2018/11/hidden-markov-model-example-in-r-with-the-depmixs4-package/
-			library(depmixS4)
-			library(gridExtra)
-			library(reshape2)
-			
+		
 			logZ.d.DF = as.data.frame(logZ.d)
 			names(logZ.d.DF) = 'logRendement'
 			mod <- depmix(logRendement ~ 1, data = 	logZ.d.DF , nstates = 2, family = gaussian()) # use gaussian() for normally distributed data
