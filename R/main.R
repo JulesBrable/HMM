@@ -1,6 +1,7 @@
 # datas come from https://data.oecd.org/interest/long-term-interest-rates.htm
 
 library(tidyverse)
+
 source("R/load_data.R")
 
 # Préparation des données 
