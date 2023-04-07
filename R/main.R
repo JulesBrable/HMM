@@ -33,7 +33,7 @@ source("R/load_data.R")
 {
 	Z <- load_Rdata("InterestRate.Rdata", path)
 	logZ 	= log(Z+5) #on décalle de 1 pour éviter log(0) 
-	logZ.d 	= diff(logZ) 	
+	logZ.d 	= diff(logZ)
 	
 	plot(logZ.d)	
 }
@@ -530,3 +530,4 @@ source("R/load_data.R")
 		
 
 }
+
