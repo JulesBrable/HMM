@@ -22,8 +22,6 @@ source("R/load_data.R")
 	tokeep = grep("Q",DATAFR$TIME)
 	DATAFRQ  = DATAFR[tokeep,]
 	InterestRate = ts(DATAFRQ$Value,start=c(1960,1), frequency = 4)
-
-	plot(InterestRate)
 	
 	save(InterestRate, file = paste0(path, "InterestRate.Rdata"))
 	rm(list=setdiff(ls(), c("path", lsf.str())))
@@ -35,6 +33,12 @@ source("R/load_data.R")
 	logZ 	= log(Z+5) #on décalle de 1 pour éviter log(0) 
 	logZ.d 	= diff(logZ)
 }
+
+png("img/series.png", width = 904, height = 418)
+par(mfrow = c(1,2))
+plot(Z, main = "Serie en niveau", ylab = "Z")
+plot(Z, main = "Serie en difference logarithmique", ylab = "dlogZ")
+dev.off()
 
 # Modélisation HMM à espace d'états discret des log-rendemens
 {
