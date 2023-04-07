@@ -40,6 +40,7 @@ plot(Z, main = "Serie en niveau", ylab = "Z")
 plot(Z, main = "Serie en difference logarithmique", ylab = "dlogZ")
 dev.off()
 
+
 # Modélisation HMM à espace d'états discret des log-rendemens
 {
 	# Première vérification regardons, par curiosité, si le signe du log-rendement à l'instant "t" influe sur distribution du log-rendement à l'instant t+1  
