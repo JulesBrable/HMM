@@ -34,8 +34,6 @@ source("R/load_data.R")
 	Z <- load_Rdata("InterestRate.Rdata", path)
 	logZ 	= log(Z+5) #on décalle de 1 pour éviter log(0) 
 	logZ.d 	= diff(logZ)
-	
-	plot(logZ.d)	
 }
 
 # Modélisation HMM à espace d'états discret des log-rendemens
