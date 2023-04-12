@@ -432,7 +432,7 @@ dev.off()
 			ts.plot(Z,ZForecast,col=c(1,1:nMC))  # nMC trajectoires des log-rendements : la première valeur est inutile pour la suite
 			ts.plot(Z,ZForecast,col=c(1,1:nMC),xlim = c(2020, time(ZForecast)[H+1]))  # nMC trajectoires des log-rendements : la première valeur est inutile pour la suite
 			
-			# Serons nous de ces trajectoires pour prédire le taux d'interêt moyen, médian, quantiles à 97.5%, 2.5%, 99.5%,0.5% 
+			# Servons nous de ces trajectoires pour prédire le taux d'interêt moyen, médian, quantiles à 97.5%, 2.5%, 99.5%,0.5% 
 			MeanForecast 	= ts(apply(ZForecast,1, mean),start=time(logZ)[n+1],frequency = frequency(logZ))
 			MedianForecast 	= ts(apply(ZForecast,1, FUN = function(x){ quantile(x,0.5) }),start=time(logZ)[n+1],frequency = frequency(logZ))
 			Q0975Forecast 	= ts(apply(ZForecast,1, FUN = function(x){ quantile(x,0.975) }),start=time(logZ)[n+1],frequency = frequency(logZ))
