@@ -4,6 +4,7 @@ library(tidyverse)
 library(depmixS4)
 library(gridExtra)
 library(reshape2)
+library(lattice)
 
 source("R/load_data.R")
 
@@ -37,9 +38,8 @@ source("R/load_data.R")
 png("img/series.png", width = 904, height = 418)
 par(mfrow = c(1,2))
 plot(Z, main = "Serie en niveau", ylab = "Z")
-plot(Z, main = "Serie en difference logarithmique", ylab = "dlogZ")
+plot(logZ.d, main = "Serie en difference logarithmique", ylab = "dlogZ")
 dev.off()
-
 
 # Modélisation HMM à espace d'états discret des log-rendemens
 {
@@ -146,19 +146,19 @@ dev.off()
 			# Fonterra data only available from Yahoo for the past few years
 		 
 			# default - a cross over point happen at the earliest point of the shorter series
+			par(mfrow = c(1, 2))
 			dualplot(x1 = time(Z), y1 =Z,
 					 x2 = time(MULogRendements), y2 = MULogRendements,
 					 ylim1 = c(min(Z),max(Z)), ylim2 = c(min(MULogRendements),max(MULogRendements)),
 					 
 					 ylab1 = "InterestRate", ylab2 = "MULogRendements", 
-					 legx = "je n'en veut pas", main = "LogRendements")
-			dev.new()
+					 legx = "je n'en veux pas", main = "")
 			dualplot(x1 = time(Z), y1 =Z,
 					 x2 = time(SDLogRendements), y2 = SDLogRendements,
 					 ylim1 = c(min(Z),max(Z)), ylim2 = c(min(SDLogRendements),max(SDLogRendements)),
 					 
 					 ylab1 = "InterestRate", ylab2 = "SDLogRendements", 
-					 legx = "je n'en veut pas", main = "LogRendements")
+					 legx = "", main = "")
 		
 			#Commenter l'effet du mélange
 			
@@ -204,10 +204,29 @@ dev.off()
 			List <- HMMaic(DATA=logZ.d.DF,VarName='logRendement',M=M)	
 			List$r
 			# List$r < M 
-			par(mfrow=c(2,1))
-			plot(1:M,List$logLikVec,xlab = "r",ylab="LogLikelihood")
-			plot(1:M,List$aicVec,xlab = "r",ylab="aic")
 			
+			xbreaks <- round(seq(from = 1, to = M, length.out = M))
+			# Plot the first series (log-likelihood) with its own y-axis
+			plot(1:M, List$logLikVec, xlab = "r", ylab = "", axes = FALSE,
+			     xlim = range(xbreaks), ylim = range(List$logLikVec),
+			     col = "#C54E6D", pch = 16)
+			axis(2, col = "#C54E6D", col.axis= "#C54E6D", las=1)
+			mtext(paste0("\n", "LogLikelihood", "\n"), side = 2, col = "#C54E6D", line = 1.5) 
+			# Add a second y-axis for the AIC series
+			par(new = TRUE)
+			plot(1:M, List$aicVec, xlab = "", ylab = "", axes = FALSE,
+			     ylim = range(List$aicVec),
+			     col = "#009380", pch = 17)
+			# Create the second y-axis on the right side of the plot
+			## add second vertical axis (on right) and its label
+			mtext(paste0("\n", "AIC", "\n"), side = 4, col = "#009380", line = 4.5) 
+			axis(4,  col = "#009380", col.axis = "#009380", las=1)
+			# Draw the horizontal time axis
+			axis(1, at = xbreaks)
+			mtext(paste0("\n", "r", "\n"), side = 1, col = "black", line = 2.5) 
+			# Add a legend to distinguish the two series
+			legend("topleft", legend = c("LogLikelihood", "AIC"),
+			       col = c("#C54E6D", "#009380"), pch = c(16, 17))
 			
 			r <- List$r
 			r 
@@ -215,7 +234,10 @@ dev.off()
 			fit.mod = List$fit.mod			
 			summary(fit.mod)
 			# Commenter le modèle ajusté 
-			# Un oeil sutr les paramêtres
+			
+			est.states <- posterior(fit.mod)
+			table(est.states$state)
+			# Un oeil sur les paramêtres
 			{
 				#Parametres d'emmission
 				{
@@ -249,7 +271,7 @@ dev.off()
 					transition_mat <- transitionDepmix(fit.mod)
 					plot(MU,SD,xlab="mu",ylab="sd")
 					transition_mat
-					library(lattice)
+
 					levelplot(transition_mat) #mmhh il a transposé
 					levelplot(t(transition_mat),xlab = "Xt+1",ylab="Xt") 
 				}
@@ -277,27 +299,22 @@ dev.off()
 				
 				
 				MULogRendements = MU[est.states$state]
-				MULogRendements = ts(MULogRendements,start = time(InterestRate)[2], frequency =frequency(InterestRate )  )
+				MULogRendements = ts(MULogRendements,start = time(Z)[2], frequency =frequency(Z )  )
 				
 				SDLogRendements = SD[est.states$state]
-				SDLogRendements = ts(SDLogRendements,start = time(InterestRate)[2], frequency =frequency(InterestRate )  )
-				dev.new()
-				dualplot(x1 = time(InterestRate), y1 =InterestRate,
+				SDLogRendements = ts(SDLogRendements,start = time(Z)[2], frequency =frequency(Z )  )
+				par(mfrow = c(1, 2))
+				dualplot(x1 = time(Z), y1 =Z,
 						 x2 = time(MULogRendements), y2 = MULogRendements,
-						 ylim1 = c(min(InterestRate),max(InterestRate)), ylim2 = c(min(MULogRendements),max(MULogRendements)),
+						 ylim1 = c(min(Z),max(Z)), ylim2 = c(min(MULogRendements),max(MULogRendements)),
 						 
 						 ylab1 = "InterestRate", ylab2 = "MULogRendements", 
-						 legx = NULL, main = "Taux d'intêret et espérance des lois d'emmission des logs-rendements ")
-				
-				dev.new()
-				dualplot(x1 = time(InterestRate), y1 =InterestRate,
+						 legx = "", main = "")
+				dualplot(x1 = time(Z), y1 =Z,
 						 x2 = time(SDLogRendements), y2 = SDLogRendements,
-						 ylim1 = c(min(InterestRate),max(InterestRate)), ylim2 = c(min(SDLogRendements),max(SDLogRendements)),
+						 ylim1 = c(min(Z),max(Z)), ylim2 = c(min(SDLogRendements),max(SDLogRendements)),
 						 ylab1 = "InterestRate", ylab2 = "SDLogRendements", 
-						 legx = NULL, main = "Taux d'intêret et variances des lois d'emmission des logs-rendements ")
-				
-				
-			
+						 legx = "", main = "")
 			}
 			
 		}
@@ -313,7 +330,7 @@ dev.off()
 			prior_vec <- as.numeric(posterior(fit.mod)[n,-1])
 			prior_vec
 			
-			# Espéranceq de Y conditionnellement X=x, pour tout x 
+			# Espérance de Y conditionnellement X=x, pour tout x 
 			MU
 
 			# pour  n + 1
